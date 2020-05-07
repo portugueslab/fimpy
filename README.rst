@@ -9,7 +9,7 @@
      :target: https://pyup.io/repos/github/portugueslab/fimpy/
      :alt: Updates
 
-
+# Fimpy
 
 A python package for parallelizable processing of fluorescent imaging data
 

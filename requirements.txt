@@ -1,0 +1,11 @@
+numpy
+numba
+scipy
+scikit-image
+imageio
+h5py
+
+# Portugues lab dependencies
+flammkuchen
+lightparam
+split_dataset
