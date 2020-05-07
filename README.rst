@@ -4,6 +4,8 @@
 .. image:: https://img.shields.io/travis/portugueslab/fimpy.svg
         :target: https://travis-ci.com/portugueslab/fimpy
 
+.. image:: https://codecov.io/gh/portugueslab/fimpy/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/portugueslab/fimpy
 
 .. image:: https://pyup.io/repos/github/portugueslab/fimpy/shield.svg
      :target: https://pyup.io/repos/github/portugueslab/fimpy/

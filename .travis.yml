@@ -19,7 +19,7 @@ after_success:
 
 - pip install Sphinx==3.0.3
 - pip install sphinx_rtd_theme==0.4.3
-- pip install .
+- pip install .  # Seems to be required for the apidocs
 
 - cd docs
 - sphinx-apidoc ../split_dataset -o ./
