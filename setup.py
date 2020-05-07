@@ -12,7 +12,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = []
-with open(os.path.join('requirements', 'default.txt')) as f:
+with open('requirements.txt') as f:
     for line in f:
         splitted = line.split("#")
         stripped = splitted[0].strip()
