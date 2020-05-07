@@ -15,9 +15,7 @@
 
 A python package for parallelizable processing of fluorescent imaging data
 
-This package has been developed in the `Portugues lab`_.
-* Free software: GNU General Public License v3
-* Documentation: https://portugueslab.github.io/fimpy
+This package has been developed in the `Portugues lab`_. Documentation can be found `here`_.
 
 Features
 --------
@@ -32,3 +30,5 @@ The package was created with Cookiecutter_ and this_ template.
 .. _`Portugues lab`: http://www.portugueslab.com
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _this: https://github.com/audreyr/cookiecutter-pypackage
+.. _here: https://portugueslab.github.io/{{ cookiecutter.project_slug }}
+
