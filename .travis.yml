@@ -22,7 +22,7 @@ after_success:
 - pip install .  # Seems to be required for the apidocs
 
 - cd docs
-- sphinx-apidoc ../split_dataset -o ./
+- sphinx-apidoc ../fimpy -o ./
 - make html
 - cd ..
 
