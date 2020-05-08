@@ -57,9 +57,9 @@ def _extract_traces_around_points_jit(
 
                     # calculate the weight from the Gaussian
                     w = (
-                        math.exp(-(z - point[0]) ** 2 / (2 * kernel[0]))
-                        * math.exp(-(y - point[1]) ** 2 / (2 * kernel[1]))
-                        * math.exp(-(x - point[2]) ** 2 / (2 * kernel[2]))
+                        math.exp(-((z - point[0]) ** 2) / (2 * kernel[0]))
+                        * math.exp(-((y - point[1]) ** 2) / (2 * kernel[1]))
+                        * math.exp(-((x - point[2]) ** 2) / (2 * kernel[2]))
                     )
                     w_sum += w
                     # accumulate this to the corresponding point
@@ -136,9 +136,9 @@ def _paint_anatomy_jit(stack, points, color, kernel=(0.5, 1, 1), kernel_mult=2):
 
                     # calculate the weight from the Gaussian
                     w = (
-                        math.exp(-(z - point[0]) ** 2 / (2 * kernel[0]))
-                        * math.exp(-(y - point[1]) ** 2 / (2 * kernel[1]))
-                        * math.exp(-(x - point[2]) ** 2 / (2 * kernel[2]))
+                        math.exp(-((z - point[0]) ** 2) / (2 * kernel[0]))
+                        * math.exp(-((y - point[1]) ** 2) / (2 * kernel[1]))
+                        * math.exp(-((x - point[2]) ** 2) / (2 * kernel[2]))
                     )
 
                     stack[z, y, x, :] = stack[z, y, x, :] * (1 - w) + color * w

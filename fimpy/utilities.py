@@ -2,6 +2,7 @@ from numba import jit
 import numpy as np
 import math
 
+
 @jit(nopython=True)
 def fast_pearson(x, y):
     """ Calculate correlation between two data series.
