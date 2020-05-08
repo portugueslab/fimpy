@@ -25,3 +25,13 @@ jobs:
     # Format
     - name: Black Code Formatter
       uses: lgeiger/black-action@v1.0.1
+      with:
+        args: .
+    
+    - uses: stefanzweifel/git-auto-commit-action@v4.1.6
+      with:
+        commit_message: Apply automatic changes
+        branch: ${{ github.head_ref }}
+        commit_user_name: Action black fromatter
+        commit_user_email: my-github-actions-bot@example.org
+        commit_author: Author <actions@github.com>
