@@ -11,7 +11,12 @@
      :target: https://pyup.io/repos/github/portugueslab/fimpy/
      :alt: Updates
 
-# Fimpy
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+     :target: https://github.com/psf/black
+     :alt: Code style: black
+     
+Fimpy
+=====
 
 A python package for parallelizable processing of fluorescent imaging data
 
