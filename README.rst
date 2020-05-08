@@ -30,5 +30,5 @@ The package was created with Cookiecutter_ and this_ template.
 .. _`Portugues lab`: http://www.portugueslab.com
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _this: https://github.com/audreyr/cookiecutter-pypackage
-.. _here: https://portugueslab.github.io/{{ cookiecutter.project_slug }}
+.. _here: https://portugueslab.github.io/fimpy
 
