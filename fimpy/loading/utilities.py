@@ -12,7 +12,7 @@ def _stack_from_tif(file):
             stack[i, :, :] = reader.get_data(i)
         # fixes for files saved with errors
         except ValueError:
-            return stack[0:i, :, :]
+            return stack[:i, :, :]
     return stack
 
 

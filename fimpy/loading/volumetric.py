@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import imageio
 import numpy as np
 
@@ -9,26 +8,10 @@ from fimpy.pipeline.common import run_in_blocks
 from fimpy.loading.utilities import _stack_from_tif, _imshape_from_tif
 
 
-def _get_um_file_number(filename):
-    if filename.name[:3] == "img":
-        return str(filename).split("time")[1].split("_")[0]
-    else:
-        try:
-            k = str(filename).split("Pos0")[1].split(".ome")[0]
-        except IndexError:
-            try:
-                k = str(filename).split("Default")[1].split(".ome")[0]
-            except IndexError:
-                return 0
-        if k == "":
-            return 0
-        else:
-            return int(k[1:])
-
-
 @loading_function
 def load_volumetric(
-    data_dir, output_dir=None, format="TIF", block_duration=60 * 2, verbose=True
+    data_dir, n_planes, filesort_key=None, output_dir=None,
+    block_duration=300, resolution=(1, 1, 1, 1), verbose=True,
 ):
     """
     Load a tiff micromanager file into a split h5 dataset.
@@ -39,63 +22,39 @@ def load_volumetric(
     :return:
     """
 
-    data_dir = Path(data_dir)
     if output_dir is None:
         output_dir = data_dir
 
-    output_dir = Path(output_dir)
-    # try to load the metadata either from JSON on HDF5
-    experiment = LightsheetExperiment(data_dir)
+    data_dir, output_dir = Path(data_dir), Path(output_dir)
 
-    # find the frequency and number of planes:
-    # TODO handle this in the ImagingExperiment class
-    try:
-        lconfig = experiment["imaging"].get(
-            "lightsheet_config", experiment["imaging"]["microscope_config"]
-        )
-        volume_rate = lconfig["piezo_z"]["frequency"]
-        time_block_duration = int(volume_rate * block_duration)
-
-        # Number of planes as number of trigger pulses:
-        n_planes = len(lconfig["camera_trigger"]["pulse_times"])
-
-    # for old lightsheet software:
-    except KeyError:
-        volume_rate = experiment["imaging"]["piezo_frequency"]
-        time_block_duration = int(volume_rate * block_duration)
-        n_planes = round(
-            experiment["imaging"]["frame_rate"]
-            / experiment["imaging"]["piezo_frequency"]
-        )
-
-    im_files = sorted(list(data_dir.glob("*.tif")), key=_get_um_file_number)
+    # find all files:
+    im_files = sorted(list(data_dir.glob("*.tif")), key=filesort_key)
     if len(im_files) == 0:
         raise Exception("The selected folder contains no tiff files!")
-    im_shape = _imshape_from_tif(im_files[0])
+
+    im_shape = _imshape_from_tif(im_files[0])  # shape of a single frame
 
     # Not knowing the shape full at this point, we will just make an empty
     # container with full_shape equal to block shape. This will be corrected
-    # at the end before saving stack metadata.
+    # at the end by the StackContainerLs object before saving stack metadata.
     loaded_ds = StackContainerLs(
         output_dir,
-        shape_full=(time_block_duration, n_planes) + im_shape,
-        shape_block=(time_block_duration, n_planes) + im_shape,
-        resolution=experiment.resolution,
+        shape_full=(block_duration, n_planes) + im_shape,
+        shape_block=(block_duration, n_planes) + im_shape,
+        resolution=resolution,
     )
+
+    # Loop over files, read and pour reshaped array:
     for tf in im_files:
         try:
             if verbose:
                 print("Loading ", tf)
-            # current_file = sitk.ReadImage(str(tf))
-            current_array = _stack_from_tif(str(tf))
+            # Read and pour:
+            loaded_ds.pour(_stack_from_tif(str(tf)))
 
-            loaded_ds.pour(current_array)
         except RuntimeError as e:
             print("Failed reading {}".format(tf))
             print(str(e))
-
-    # the metadata is copied if it is in JSON, otherwise it is converted to JSON
-    experiment.copy_to_dir(output_dir)
 
     return loaded_ds.finalize()
 
