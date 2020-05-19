@@ -10,8 +10,13 @@ from fimpy.loading.utilities import _stack_from_tif, _imshape_from_tif
 
 @loading_function
 def load_volumetric(
-    data_dir, n_planes, filesort_key=None, output_dir=None,
-    block_duration=300, resolution=(1, 1, 1, 1), verbose=True,
+    data_dir,
+    n_planes,
+    filesort_key=None,
+    output_dir=None,
+    block_duration=300,
+    resolution=(1, 1, 1, 1),
+    verbose=True,
 ):
     """
     Load a tiff micromanager file into a split h5 dataset.
