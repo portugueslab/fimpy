@@ -2,27 +2,12 @@ import flammkuchen as fl
 import numpy as np
 from joblib import Parallel, delayed
 
-from split_dataset import Blocks, EmptySplitDataset
+from split_dataset import EmptySplitDataset, Blocks
 from fimpy.alignment.volume import (
-    align_block_shift,
     find_shifts_sobel,
     shift_stack,
     sobel_stack,
 )
-
-
-
-def _get_shifts(dataset, tstart, tend, fft_ref, prefilter_sigma):
-    print("Finding shifts at ", tstart)
-    return find_shifts_sobel(dataset[tstart:tend, :, :, :], fft_ref, prefilter_sigma)
-
-
-def _apply_shifts(dataset, block, out_file, shifts, shift_times):
-    vid = dataset[Blocks.block_to_slices(block)]
-    aligned = shift_stack(vid, range(block[0][0], block[0][1]), shifts, shift_times)
-    print(out_file)
-    fl.save(out_file, dict(stack_4D=aligned, shifts=shifts))
-
 
 def align_volumes_with_filtering(
     dataset,
@@ -55,7 +40,7 @@ def align_volumes_with_filtering(
     time_middle = dataset.shape[0] // 2
 
     # prepare the destination
-    new_dataset = EmptyH5Dataset(
+    new_dataset = EmptySplitDataset(
         root=output_dir or dataset.root.parent,
         name="aligned",
         shape_full=dataset.shape,
@@ -134,8 +119,20 @@ def align_volumes_with_filtering(
     return new_dataset.finalize()
 
 
+def _get_shifts(dataset, tstart, tend, fft_ref, prefilter_sigma):
+    print("Finding shifts at ", tstart)
+    return find_shifts_sobel(dataset[tstart:tend, :, :, :], fft_ref, prefilter_sigma)
+
+
+def _apply_shifts(dataset, block, out_file, shifts, shift_times):
+    vid = dataset[Blocks.block_to_slices(block)]
+    aligned = shift_stack(vid, range(block[0][0], block[0][1]), shifts, shift_times)
+    print(out_file)
+    fl.save(out_file, dict(stack_4D=aligned, shifts=shifts))
+
+
 def apply_shifts(dataset, output_dir=None, block_size=120, n_jobs=10, verbose=False):
-    new_dataset = EmptyH5Dataset(
+    new_dataset = EmptySplitDataset(
         root=output_dir or dataset.root.parent,
         name="aligned",
         shape_full=dataset.shape,
