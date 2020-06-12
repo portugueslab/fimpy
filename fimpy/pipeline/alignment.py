@@ -9,6 +9,7 @@ from fimpy.alignment.volume import (
     sobel_stack,
 )
 
+
 def align_volumes_with_filtering(
     dataset,
     output_dir=None,

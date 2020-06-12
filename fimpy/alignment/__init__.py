@@ -11,7 +11,6 @@ from fimpy.alignment.volume import (
 )
 
 
-
 def _get_shifts(dataset, tstart, tend, fft_ref, prefilter_sigma):
     print("Finding shifts at ", tstart)
     return find_shifts_sobel(dataset[tstart:tend, :, :, :], fft_ref, prefilter_sigma)

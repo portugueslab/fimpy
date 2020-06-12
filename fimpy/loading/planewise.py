@@ -55,8 +55,11 @@ def load_planewise(
     if folder_dest is None:
         folder_dest = path
 
-    cont = EmptySplitDataset(name="original",
-        root=folder_dest, shape_full=shape_full, shape_block=shape_block
+    cont = EmptySplitDataset(
+        name="original",
+        root=folder_dest,
+        shape_full=shape_full,
+        shape_block=shape_block,
     )
 
     for i in range(0, len(im_files), stacks_per_plane):
