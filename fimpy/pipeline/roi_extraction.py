@@ -7,7 +7,6 @@ from fimpy.roi_extraction import corr_algorithms as ca
 from fimpy.roi_extraction.anatomical import extract_traces_around_points
 
 
-
 def _corr_map_plane(dataset, block, out_file, time_lims, window_size):
     if time_lims is None:
         time_slice = slice(None)
@@ -53,7 +52,12 @@ def _extract_traces_coords(dataset, block, out_file, coords, **kwargs):
 
 
 def extract_traces_coords(
-    dataset: SplitDataset, coords, output_dir=None, block_duration=60, n_jobs=5, **kwargs
+    dataset: SplitDataset,
+    coords,
+    output_dir=None,
+    block_duration=60,
+    n_jobs=5,
+    **kwargs
 ):
     new_dataset = EmptySplitDataset(
         shape_full=dataset.shape,
