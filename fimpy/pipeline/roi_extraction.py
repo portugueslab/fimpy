@@ -16,7 +16,9 @@ def _corr_map_plane(dataset, block, out_file, time_lims, window_size):
     fl.save(out_file, dict(stack_3D=cmap))
 
 
-def correlation_map(dataset, output_dir=None, time_lims=None, window_size=(1, 3, 3), n_jobs=10):
+def correlation_map(
+    dataset, output_dir=None, time_lims=None, window_size=(1, 3, 3), n_jobs=10
+):
     new_dataset = EmptySplitDataset(
         shape_full=dataset.shape[1:],
         shape_block=(1,) + dataset.shape[2:],

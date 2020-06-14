@@ -33,6 +33,7 @@ def correlation_map(video: np.ndarray, window_size=(1, 3, 3)) -> np.ndarray:
         tuple(neighbours[n_neighbours + 1 :]),
     )
 
+
 @jit(nopython=True)
 def _correlation_map_jit(video, wrs, neighbors_a, neighbors_b):
     """ Function that computes the actual voxelwise correlation map. Depends
