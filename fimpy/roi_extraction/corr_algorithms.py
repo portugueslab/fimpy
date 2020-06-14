@@ -2,7 +2,36 @@ from numba import jit
 import numpy as np
 import math
 from fimpy.utilities import fast_pearson
+import itertools
+from fimpy.utilities import to_4d
 
+
+def correlation_map(video: np.ndarray, window_size=(1, 3, 3)) -> np.ndarray:
+    """ Calculate the correlation map of a video
+
+    :param video: the stack [t, z, x, y]
+    :param window_size: an integer if isotropic, usually planewise, so (1, 3, 3)
+    :return: the 3D correlation map
+    """
+
+    video = to_4d(video)
+
+    if isinstance(window_size, tuple):
+        wrs = tuple([ws // 2 for ws in window_size])
+    else:
+        wrs = tuple([min(window_size, video.shape[i + 1]) // 2 for i in range(3)])
+
+    ranges = [range(-wr, wr + 1) for wr in wrs]
+
+    neighbours = tuple(itertools.product(*ranges))
+    n_neighbours = len(neighbours) // 2
+
+    return _correlation_map_jit(
+        video,
+        wrs,
+        tuple(neighbours[:n_neighbours]),
+        tuple(neighbours[n_neighbours + 1 :]),
+    )
 
 @jit(nopython=True)
 def _correlation_map_jit(video, wrs, neighbors_a, neighbors_b):
