@@ -102,7 +102,12 @@ def _extract_traces_coords(dataset, block, out_file, coords, **kwargs):
 
 
 def extract_traces_coords(
-    dataset: SplitDataset, coords, output_dir=None, block_duration=60, n_jobs=5, **kwargs
+    dataset: SplitDataset,
+    coords,
+    output_dir=None,
+    block_duration=60,
+    n_jobs=5,
+    **kwargs
 ):
     new_dataset = EmptySplitDataset(
         shape_full=dataset.shape,

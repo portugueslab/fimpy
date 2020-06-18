@@ -383,7 +383,6 @@ def _update_labels(
     return start_value
 
 
-
 @jit(nopython=True)
 def _get_ROI_coords_areas_traces_3D(stack, rois: np.ndarray, max_rois=-1) -> dict:
     """ A function to efficiently extract ROI data, 3D ROIs
