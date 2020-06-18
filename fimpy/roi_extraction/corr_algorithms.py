@@ -3,7 +3,8 @@ import numpy as np
 import math
 from fimpy.utilities import fast_pearson
 import itertools
-from fimpy.utilities import to_4d
+from fimpy.utilities import to_4d, to_3d
+from lightparam import Param
 
 
 def correlation_map(video: np.ndarray, window_size=(1, 3, 3)) -> np.ndarray:
@@ -126,6 +127,65 @@ def _dist_vox(t1, t2, vs2):
         vs2[0] * ((t1[0] - t2[0]) ** 2)
         + vs2[1] * ((t1[1] - t2[1]) ** 2)
         + vs2[2] * ((t1[2] - t2[2]) ** 2)
+    )
+
+
+def grow_rois(
+    stack,
+    corr_map,
+    init_corr_thresh: Param(0.15, (0.01, 0.95)) = 0.15,
+    corr_thresh_inc_dist: Param(1.0, (0.5, 15)) = 1,
+    final_corr_threshold: Param(0.0, (0, 0.95)) = 0,
+    max_radius: Param(10, (2, 100)) = 10,
+    min_area: Param(1, (1, 50)) = 1,
+    max_labels: Param(100, (10, 20000)) = 100,
+    max_investigate: Param(2000, (100, 30000)) = 2000,
+    across_planes: Param(True) = True,
+    voxel_size=(1, 1, 1),
+) -> np.ndarray:
+    """ Find ROIs by taking local maxima of correlation maps and growing ROIs
+     around them
+
+    :param corr_map: input correlation map
+    :param init_corr_thresh: the threshold of correlation that gets added to
+        the roi, grows linearly until corr_thresh_inc_dist
+    :param corr_thresh_inc_dist: the distance until which the correlation
+        threshold increases, in voxels if voxel_size is not specified, otherwise
+        in um
+     :param final_corr_threshold: the correlation threshold reached over
+        corr_threshold_steps
+    :param max_radius: the maximum radius of a ROIs, so that they are
+        roughly circular
+    :param min_area: the minimum area of a ROI
+    :param max_labels: the maximal number of ROIs to search for
+        (if not across planes, in one plane)
+    :param max_investigate: the maximum number of potential ROIs to investigate
+        per slice or volume part (as small ROIs are discarded)
+
+    :param across_planes: True to grow ROIs across planes
+    :param voxel_size: (optional, size of voxels in mm)
+
+
+    :return: stack ROIs labeled
+    """
+
+    # if we get the video or the correlation map of the wrong shape,
+    #  expand it so that the algorithm still works
+    stack = to_4d(stack)
+    corr_map = to_3d(corr_map)
+
+    return _jit_flood(
+        stack,
+        corr_map,
+        init_corr_thresh,
+        max_labels,
+        final_corr_threshold,
+        max_radius,
+        corr_thresh_inc_dist,
+        max_investigate,
+        min_area,
+        across_planes,
+        voxel_size,
     )
 
 
@@ -321,3 +381,100 @@ def _update_labels(
                     _flood_fill(full_labels, new_labels, (i, j, k), offset, start_value)
                     start_value += 1
     return start_value
+
+
+
+@jit(nopython=True)
+def _get_ROI_coords_areas_traces_3D(stack, rois: np.ndarray, max_rois=-1) -> dict:
+    """ A function to efficiently extract ROI data, 3D ROIs
+
+    :param stack: imaging stack
+    :param rois: image where each ROI is labeled by the same integer
+    :param max_rois: number of ROIs per stack
+    :return: coords, areas, traces
+    """
+    n_rois = np.max(rois + 1)
+    coords = np.zeros((n_rois, len(rois.shape)))
+    areas = np.zeros(n_rois, np.int32)
+    n_time = stack.shape[0]
+    traces = np.zeros((n_rois, n_time), dtype=np.float32)
+    for i in range(rois.shape[0]):
+        for j in range(rois.shape[1]):
+            for k in range(rois.shape[2]):
+                roi_id = rois[i, j, k]
+                if roi_id > -1:
+                    areas[roi_id] += 1
+                    coords[roi_id, 0] += i
+                    coords[roi_id, 1] += j
+                    coords[roi_id, 2] += k
+                    traces[roi_id, :] += stack[:, i, j, k]
+
+    for i in range(n_rois):
+        coords[i, :] /= areas[i]
+        traces[i, :] /= areas[i]
+
+    return coords, areas, traces
+
+
+@jit(nopython=True)
+def _get_ROI_coords_areas_traces_3D_planewise(
+    stack, rois: np.ndarray, max_rois=-1
+) -> dict:
+    """ A function to efficiently extract ROI data, 3D ROIs
+
+    :param stack: imaging stack
+    :param rois: image where each ROI is labeled by the same integer
+    :param max_rois: number of ROIs per stack
+    :return: coords, areas, traces
+    """
+    n_rois = np.max(rois + 1)
+    n_time = stack.shape[0]
+    n_planes = stack.shape[1]
+    traces = np.zeros((n_rois, n_planes, n_time), dtype=np.float32) * np.nan
+    coords = np.zeros((n_rois, len(rois.shape)))
+    areas = np.zeros((n_rois, n_planes), np.int32)
+    for i in range(rois.shape[0]):
+        for j in range(rois.shape[1]):
+            for k in range(rois.shape[2]):
+                roi_id = rois[i, j, k]
+                if roi_id > -1:
+                    areas[roi_id] += 1
+                    coords[roi_id, 0] += i
+                    coords[roi_id, 1] += j
+                    coords[roi_id, 2] += k
+                    traces[roi_id, i, :] += stack[:, i, j, k]
+
+    for i in range(n_rois):
+        coords[i, :] /= areas[i]
+        for z in range(n_planes):
+            traces[i, z, :] /= areas[i, z]
+
+    return coords, areas, traces
+
+
+def extract_traces(stack, rois: np.ndarray, max_rois=-1, per_plane=False) -> dict:
+    """ Extracts traces from a volumetric video with a stack which labels
+    ROI locations
+
+    :param stack: 3D video [t, z, y, x]
+    :param rois: 3D stack of ROI labels [z, y, x], labels start at 0, negative
+        numbers are unlabeled
+    :param max_rois: (optional) the maximal number of rois, to initialize arrays
+    :param per_plane: whether to extract different traces per each plane of
+        the stack (useful for 2-photon imaging)
+    :return: dictionary containing coordinates of centers of mass, volumes of ROIs and the traces
+    """
+    if len(stack.shape) == 3:
+        stack = stack[:, None, :, :]
+
+    if len(rois.shape) == 2:
+        rois = rois[None, :, :]
+
+    if per_plane:
+        coords, areas, traces = _get_ROI_coords_areas_traces_3D_planewise(
+            stack, rois, max_rois
+        )
+    else:
+        coords, areas, traces = _get_ROI_coords_areas_traces_3D(stack, rois, max_rois)
+
+    return dict(coords=coords, areas=areas, traces=traces)
