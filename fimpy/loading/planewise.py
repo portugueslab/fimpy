@@ -11,7 +11,7 @@ from split_dataset import SplitDataset, EmptySplitDataset
 @loading_function
 def load_planewise(
     folder,
-    stacks_per_plane=1,
+    frames_per_plane=0,
     pattern="*tif",
     folder_dest=None,
     subtract=0,
@@ -30,7 +30,7 @@ def load_planewise(
     # get frames_per_stack from loaded stack shape, in case of loading from
     # preprocessed data:
     first_arr = read_stack(im_files[0])
-    frames_per_plane = first_arr.shape[0] * stacks_per_plane
+    stacks_per_plane = frames_per_plane // first_arr.shape[0]
 
     if np.mod(len(im_files), stacks_per_plane) != 0:
         raise FileNotFoundError(
