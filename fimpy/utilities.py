@@ -1,6 +1,31 @@
 from numba import jit
 import numpy as np
 import math
+import cv2
+import json
+
+
+def stack_from_polygon_file(path, pol_i=0, imshape=(200, 610)):
+    """ Make a binary array from polygon masks
+
+    :param path:
+    :param pol_i:
+    :param imshape:
+    :return:
+    """
+    rawpolygons = json.load(open(path, "r"))
+    cb_pol = [r[pol_i] for r in rawpolygons]
+    mask = np.array(
+        [
+            cv2.fillPoly(
+                np.zeros((imshape[1], imshape[0]), dtype=np.uint8),
+                np.array([pol], np.int32),
+                1,
+            )
+            for pol in cb_pol
+        ]
+    )
+    return mask
 
 
 @jit(nopython=True)
