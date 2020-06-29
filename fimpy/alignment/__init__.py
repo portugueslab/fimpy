@@ -54,7 +54,7 @@ def align_volumes_with_filtering(
     time_middle = dataset.shape[0] // 2
 
     # prepare the destination
-    new_dataset = EmptyH5Dataset(
+    new_dataset = EmptySplitDataset(
         root=output_dir or dataset.root.parent,
         name="aligned",
         shape_full=dataset.shape,
@@ -134,7 +134,7 @@ def align_volumes_with_filtering(
 
 
 def apply_shifts(dataset, output_dir=None, block_size=120, n_jobs=10, verbose=False):
-    new_dataset = EmptyH5Dataset(
+    new_dataset = EmptySplitDataset(
         root=output_dir or dataset.root.parent,
         name="aligned",
         shape_full=dataset.shape,
