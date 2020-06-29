@@ -2,6 +2,7 @@ import numpy as np
 from scipy.ndimage.interpolation import shift
 from skimage.feature import register_translation
 from fimpy.alignment.volume import sobel_stack
+from skimage.registration import phase_cross_correlation
 
 
 def align_single_planes_sobel(
@@ -32,7 +33,7 @@ def align_single_planes_sobel(
         l = []
         for t in range(to_fix.shape[0]):
             shifts[t, i, :] = (
-                register_translation(
+                phase_cross_correlation(
                     np.fft.fftn(to_fix[t]),
                     fft_ref[i],
                     space="fourier",

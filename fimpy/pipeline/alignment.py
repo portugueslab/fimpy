@@ -8,7 +8,7 @@ from fimpy.alignment.volume import (
     shift_stack,
     sobel_stack,
 )
-from skimage.feature import register_translation
+from skimage.registration import phase_cross_correlation
 from fimpy.alignment.plane import align_single_planes_sobel
 
 
