@@ -215,12 +215,12 @@ def align_2p_volume(
             print("Registering across planes...")
         # Find between-planes shifts
         for i in range(centre_plane, reference.shape[0] - 1):
-            s, _, _ = register_translation(
+            s, _, _ = phase_cross_correlation(
                 reference[i, :, :], reference[i + 1, :, :], 10
             )
             shifts_planes[i + 1, :] = shifts_planes[i, :] + s
         for i in range(centre_plane, 0, -1):
-            s, _, _ = register_translation(
+            s, _, _ = phase_cross_correlation(
                 reference[i, :, :], reference[i - 1, :, :], 10
             )
             shifts_planes[i - 1, :] = shifts_planes[i, :] + s
