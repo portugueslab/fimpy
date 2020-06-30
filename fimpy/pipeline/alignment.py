@@ -268,4 +268,3 @@ def _align_and_shift(
     fl.save(out_file, dict(stack_4D=shifted, shifts=shifts), compression="blosc")
 
     print("Saved {}...".format(out_file))
-
