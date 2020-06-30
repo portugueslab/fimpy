@@ -8,6 +8,8 @@ from fimpy.alignment.volume import (
     shift_stack,
     sobel_stack,
 )
+from skimage.registration import phase_cross_correlation
+from fimpy.alignment.plane import align_single_planes_sobel
 
 
 def align_volumes_with_filtering(
@@ -154,3 +156,116 @@ def apply_shifts(dataset, output_dir=None, block_size=120, n_jobs=10, verbose=Fa
         for i_block, (_, new_block) in enumerate(new_dataset.slices(as_tuples=True))
     )
     return new_dataset.finalize()
+
+
+def align_2p_volume(
+    dataset,
+    output_dir=None,
+    reference=None,
+    n_frames_ref=10,
+    across_planes=None,
+    prefilter_sigma=3.3,
+    upsample_factor=10,
+    max_shift=15,
+    n_jobs=20,
+    verbose=True,
+):
+    """ Function for complete alignment of two-photon, planar acquired stack
+
+    :param dataset: input H5Dataset
+    :param output_dir: optional, output destination directory, subdirectory aligned will appear
+    :param reference: optional, reference to align to
+    :param n_frames_ref: number of frames to take as reference mean, if reference is being calculated
+    :param across_planes: bool, True by default if reference is not provided, whether to align across planes
+    :param prefilter_sigma: feature size to filter for better alignment. if < 0 no filtering will take place
+    :param upsample_factor: granularity of subpixel shift
+    :param max_shift: maximum shift allowed
+    :param n_jobs: number of parallel jobs
+    :return: reference to align dataset
+    """
+
+    # prepare the destination
+    new_dataset = EmptySplitDataset(
+        root=output_dir or dataset.root.parent,
+        name="aligned",
+        shape_full=dataset.shape,
+        shape_block=(dataset.shape_block[0], 1) + dataset.shape_block[2:],
+    )
+
+    if verbose:
+        print("Calculating filtered reference")
+    if reference is None:
+        t_mid = dataset.shape[0] // 2
+        reference = dataset[t_mid : t_mid + n_frames_ref, :, :, :].mean(0)
+        if across_planes is None:
+            across_planes = False
+    else:
+        if across_planes is None:
+            across_planes = True
+
+    sob_ref = sobel_stack(reference, prefilter_sigma)
+
+    n_planes = reference.shape[0]
+    shifts_planes = np.zeros((n_planes, 2))
+
+    centre_plane = int(n_planes // 2)
+
+    if across_planes:
+        if verbose:
+            print("Registering across planes...")
+        # Find between-planes shifts
+        for i in range(centre_plane, reference.shape[0] - 1):
+            s, _, _ = phase_cross_correlation(
+                reference[i, :, :], reference[i + 1, :, :], 10
+            )
+            shifts_planes[i + 1, :] = shifts_planes[i, :] + s
+        for i in range(centre_plane, 0, -1):
+            s, _, _ = phase_cross_correlation(
+                reference[i, :, :], reference[i - 1, :, :], 10
+            )
+            shifts_planes[i - 1, :] = shifts_planes[i, :] + s
+
+    fl.save(dataset.root.parent / "shifts.h5", shifts_planes)
+
+    if verbose:
+        print("Aligning individual planes...")
+    Parallel(n_jobs=n_jobs)(
+        delayed(_align_and_shift)(
+            dataset,
+            new_block,
+            sob_ref[i_block : i_block + 1, :, :],
+            str(new_dataset.root / new_dataset.files[i_block]),
+            shifts_planes[i_block, :],
+            prefilter_sigma,
+            upsample_factor,
+            max_shift,
+        )
+        for i_block, (_, new_block) in enumerate(new_dataset.slices(as_tuples=True))
+    )
+
+    return new_dataset.finalize()
+
+
+def _align_and_shift(
+    dataset,
+    block,
+    ref,
+    out_file,
+    shift_plane,
+    prefilter_sigma,
+    upsample_factor,
+    max_shift,
+):
+    stack = dataset[Blocks.block_to_slices(block)]
+    shifted, shifts = align_single_planes_sobel(
+        stack,
+        np.fft.fftn(ref),
+        prefilter_sigma=prefilter_sigma,
+        upsample_factor=upsample_factor,
+        maxshift=max_shift,
+        offset=-shift_plane,
+    )
+    fl.save(out_file, dict(stack_4D=shifted, shifts=shifts), compression="blosc")
+
+    print("Saved {}...".format(out_file))
+
