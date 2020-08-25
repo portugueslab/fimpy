@@ -70,7 +70,9 @@ def grow_rois(
     :param voxel_size: (optional, size of voxels in mm)
 
 
-    :return: stack ROIs labeled
+    :return: stack with labeled ROIs, starting form 0, negative numbers do not
+        belong to ROIS, -1 is just background and -2 belongs to fragments too small
+        to be ROIs
     """
 
     # if we get the video or the correlation map of the wrong shape,
