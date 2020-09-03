@@ -135,7 +135,7 @@ def _downsample_block(dataset, old_block, filename, factor, method):
 
 def downsample(
     dataset: SplitDataset,
-    downsampling=2,
+    downsampling= (1, 1, 2, 2),
     proc_block_shape=None,
     crop=None,
     output_dir=None,
@@ -145,7 +145,7 @@ def downsample(
     """ Donwsamples a dataset
 
     :param dataset:
-    :param downsampling:
+    :param downsampling: tuple of 4 (original, original, ds_factor, ds_factor)
     :param crop:
     :param output_dir:
     :param n_jobs:
