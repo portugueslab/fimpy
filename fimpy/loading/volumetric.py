@@ -65,7 +65,7 @@ def load_volumetric(
 
 
 class StackContainerLs(EmptySplitDataset):
-    """ Class to conveniently pour 3D files from MicroManager
+    """Class to conveniently pour 3D files from MicroManager
     into H5SplitDatasets
     """
 
@@ -90,7 +90,7 @@ class StackContainerLs(EmptySplitDataset):
         self.plane_shape = None
 
     def pour(self, data):
-        """ A recursive procedure which repeats until all of the input data
+        """A recursive procedure which repeats until all of the input data
         is poured in blocks
         """
         if self.plane_shape is None:
@@ -164,7 +164,7 @@ def fix_frameskip(
     n_jobs=20,
     invert_z=True,
 ):
-    """ Corrects ligthsheet stacks where frame skips mess up the z-order of planes.
+    """Corrects ligthsheet stacks where frame skips mess up the z-order of planes.
     It applies the _fix_frameskip function using run_in_blocks.
     :param ds:  split dataseet to be fixed
     :param n_frames_process: number of frames for each task
@@ -174,7 +174,7 @@ def fix_frameskip(
     :param n_jobs: number of jobs for the task
     :param invert_z: invert order of planes to follow convention of dorso-ventral
     :return:
-        """
+    """
 
     # Heuristics to find reasonable splitting if none provided:
     if n_frames_process is None:
@@ -200,7 +200,7 @@ def fix_frameskip(
 
 
 def _align_frame_to_ref(ref_frame, input_frame):
-    """ Function to fix a volume frame where a plane was skipped.
+    """Function to fix a volume frame where a plane was skipped.
     It uses a reference to reconstruct the optimal plane-wise
     correspondance and ir needed leaves empty the missing plane.
     """
@@ -216,7 +216,7 @@ def _align_frame_to_ref(ref_frame, input_frame):
 
 
 def _fix_frameskip(video, planes_skip_before=1, planes_skip_after=3, invert_z=True):
-    """ Corrects ligthsheet stacks where frame skips mess up the z-order of planes.
+    """Corrects ligthsheet stacks where frame skips mess up the z-order of planes.
     :param video:  4D stack to be fixed
     :param plane_skip_before: number of planes to skip before objective drops
     :param plane_skip_after: number of planes to skip after ibjective drops

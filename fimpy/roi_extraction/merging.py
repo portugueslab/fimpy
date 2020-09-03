@@ -6,7 +6,7 @@ from itertools import product
 
 
 def merge_rois(blocks: Blocks, block_arrays: np.ndarray):
-    """ Merges rois extracted from different dataset blocks with padding
+    """Merges rois extracted from different dataset blocks with padding
 
     :param blocks:
     :param block_arrays:

@@ -13,7 +13,7 @@ def align_single_planes_sobel(
     maxshift=15,
     offset=[0, 0],
 ):
-    """ Aligns planes in time, z dimension is space
+    """Aligns planes in time, z dimension is space
 
     :param stack: the input video, dimensions [t, z, y, x]
     :param reference : the reference image, if not present, align to the mean

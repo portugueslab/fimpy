@@ -7,7 +7,7 @@ from scipy.ndimage.filters import gaussian_filter
 
 
 def _samesize(source, target):
-    """ Either crops or expands the source image to have the same size as
+    """Either crops or expands the source image to have the same size as
     the target. Returns a view if a strictly smaller stack is requested
 
     :param source:
@@ -39,7 +39,7 @@ def _samesize(source, target):
 
 
 def align_block_shift(stack, fft_ref, upsample_factor=10, maxshift=15):
-    """ Aligns an image stack using a reference (possibly from another stack)
+    """Aligns an image stack using a reference (possibly from another stack)
 
     :param stack:
     :param reference:
@@ -69,7 +69,7 @@ def align_block_shift(stack, fft_ref, upsample_factor=10, maxshift=15):
 
 
 def sobel_stack(stk, sigma=0):
-    """ Return a stack where each plane is filtered with a sobel filter
+    """Return a stack where each plane is filtered with a sobel filter
     after being gaussian filtered
 
     :param stk: the 3D image stack
@@ -84,7 +84,7 @@ def sobel_stack(stk, sigma=0):
 
 
 def find_shifts_sobel(stack, fft_ref, sigma, upsample_factor=10):
-    """ Sobel-filters a 3D image and aligns it to reference which should
+    """Sobel-filters a 3D image and aligns it to reference which should
     already be in fourier space
 
     :param stack:

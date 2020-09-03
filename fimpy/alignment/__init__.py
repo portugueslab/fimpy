@@ -35,7 +35,7 @@ def align_volumes_with_filtering(
     n_jobs=10,
     verbose=False,
 ):
-    """ Aligns a dataset with prefiltering, by taking averages
+    """Aligns a dataset with prefiltering, by taking averages
 
     :param dataset: the input dataset
     :param output_dir: (optional, not recommended) the output folder

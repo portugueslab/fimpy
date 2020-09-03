@@ -6,7 +6,7 @@ import json
 
 
 def stack_from_polygon_file(path, pol_i=0, imshape=(200, 610)):
-    """ Make a binary array from polygon masks
+    """Make a binary array from polygon masks
 
     :param path:
     :param pol_i:
@@ -30,7 +30,7 @@ def stack_from_polygon_file(path, pol_i=0, imshape=(200, 610)):
 
 @jit(nopython=True)
 def fast_pearson(x, y):
-    """ Calculate correlation between two data series.
+    """Calculate correlation between two data series.
     :param x: first array
     :param y: second array
     :return: pearson correlation

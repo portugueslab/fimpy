@@ -8,7 +8,7 @@ from lightparam import Param
 
 
 def correlation_map(video: np.ndarray, window_size=(1, 3, 3)) -> np.ndarray:
-    """ Calculate the correlation map of a video
+    """Calculate the correlation map of a video
 
     :param video: the stack [t, z, x, y]
     :param window_size: an integer if isotropic, usually planewise, so (1, 3, 3)
@@ -37,7 +37,7 @@ def correlation_map(video: np.ndarray, window_size=(1, 3, 3)) -> np.ndarray:
 
 @jit(nopython=True)
 def _correlation_map_jit(video, wrs, neighbors_a, neighbors_b):
-    """ Function that computes the actual voxelwise correlation map. Depends
+    """Function that computes the actual voxelwise correlation map. Depends
     on some funny inputs that need to be kept out of numba function.
     Exclude from the calculation invalid timepoints (with 0 value).
 
@@ -105,7 +105,7 @@ def _tuple3_square(t):
 
 @jit(nopython=True)
 def _tuple3_dist2(t1, t2):
-    """ Squared distance between tuples
+    """Squared distance between tuples
 
     :param t1:
     :param t2:
@@ -116,7 +116,7 @@ def _tuple3_dist2(t1, t2):
 
 @jit(nopython=True)
 def _dist_vox(t1, t2, vs2):
-    """ Squared distance betwwen tuples,
+    """Squared distance betwwen tuples,
     taking into account voxes sizes
 
     :param t1:
@@ -143,7 +143,7 @@ def grow_rois(
     across_planes: Param(True) = True,
     voxel_size=(1, 1, 1),
 ) -> np.ndarray:
-    """ Find ROIs by taking local maxima of correlation maps and growing ROIs
+    """Find ROIs by taking local maxima of correlation maps and growing ROIs
      around them
 
     :param corr_map: input correlation map
@@ -385,7 +385,7 @@ def _update_labels(
 
 @jit(nopython=True)
 def _get_ROI_coords_areas_traces_3D(stack, rois: np.ndarray, max_rois=-1) -> dict:
-    """ A function to efficiently extract ROI data, 3D ROIs
+    """A function to efficiently extract ROI data, 3D ROIs
 
     :param stack: imaging stack
     :param rois: image where each ROI is labeled by the same integer
@@ -419,7 +419,7 @@ def _get_ROI_coords_areas_traces_3D(stack, rois: np.ndarray, max_rois=-1) -> dic
 def _get_ROI_coords_areas_traces_3D_planewise(
     stack, rois: np.ndarray, max_rois=-1
 ) -> dict:
-    """ A function to efficiently extract ROI data, 3D ROIs
+    """A function to efficiently extract ROI data, 3D ROIs
 
     :param stack: imaging stack
     :param rois: image where each ROI is labeled by the same integer
@@ -452,7 +452,7 @@ def _get_ROI_coords_areas_traces_3D_planewise(
 
 
 def extract_traces(stack, rois: np.ndarray, max_rois=-1, per_plane=False) -> dict:
-    """ Extracts traces from a volumetric video with a stack which labels
+    """Extracts traces from a volumetric video with a stack which labels
     ROI locations
 
     :param stack: 3D video [t, z, y, x]

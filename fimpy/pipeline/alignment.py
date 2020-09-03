@@ -24,7 +24,7 @@ def align_volumes_with_filtering(
     n_jobs=10,
     verbose=False,
 ):
-    """ Aligns a dataset with prefiltering, by taking averages
+    """Aligns a dataset with prefiltering, by taking averages
 
     :param dataset: the input dataset
     :param output_dir: (optional, not recommended) the output folder
@@ -170,7 +170,7 @@ def align_2p_volume(
     n_jobs=20,
     verbose=True,
 ):
-    """ Function for complete alignment of two-photon, planar acquired stack
+    """Function for complete alignment of two-photon, planar acquired stack
 
     :param dataset: input H5Dataset
     :param output_dir: optional, output destination directory, subdirectory aligned will appear

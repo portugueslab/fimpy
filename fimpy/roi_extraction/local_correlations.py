@@ -6,7 +6,7 @@ from lightparam import Param
 
 
 def correlation_map(video: np.ndarray, window_size=(1, 3, 3)) -> np.ndarray:
-    """ Calculate the correlation map of a video. Tiny wrapper around the
+    """Calculate the correlation map of a video. Tiny wrapper around the
     _correlation_map_jit, to deal with the non numba-izable stuff.
     :param video: the 4D stack [t, z, x, y]
     :param window_size: tuple with full window size along each axis
@@ -43,7 +43,7 @@ def grow_rois(
     across_planes: Param(True) = True,
     voxel_size=(1, 1, 1),
 ) -> np.ndarray:
-    """ Find ROIs by taking local maxima of correlation maps and growing ROIs
+    """Find ROIs by taking local maxima of correlation maps and growing ROIs
      around them.
      !! NOTE that the correlation map is used ONLY to sort the indexes in order
      of priority of investigation; the correlation threshold is then applied to

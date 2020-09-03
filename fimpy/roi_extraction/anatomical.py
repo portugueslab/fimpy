@@ -11,7 +11,7 @@ def extract_traces_around_points(stack, points, **kwargs) -> dict:
 def _extract_traces_around_points_jit(
     stack, points, kernel=(0.5, 1, 1), kernel_mult=2, minimal_weight=10
 ):
-    """ Extracts traces around points with a Gaussian profile
+    """Extracts traces around points with a Gaussian profile
 
     :param stack: the stack from which the traces are to be extracted
     :param points: the points around which to extract the traces, shape
@@ -73,7 +73,7 @@ def _extract_traces_around_points_jit(
 
 
 def paint_anatomy(stack: np.ndarray, points, color=(230, 40, 0), **kwargs):
-    """ Paint the anatomical ROI extraction colors over the anatomy
+    """Paint the anatomical ROI extraction colors over the anatomy
 
     :param stack: the stack in which to paint the extraction kernels
     :param points: coordinates of the kernel centers
@@ -92,7 +92,7 @@ def paint_anatomy(stack: np.ndarray, points, color=(230, 40, 0), **kwargs):
 
 @jit(nopython=True)
 def _paint_anatomy_jit(stack, points, color, kernel=(0.5, 1, 1), kernel_mult=2):
-    """ Extracts traces around points with a Gaussian profile
+    """Extracts traces around points with a Gaussian profile
 
     :param stack: the stack from which the traces are to be extracted
     :param points: the points around which to extract the traces, shape
@@ -146,7 +146,7 @@ def _paint_anatomy_jit(stack, points, color, kernel=(0.5, 1, 1), kernel_mult=2):
 
 
 def extract_traces_from_roi_array(stack, pointsdata, twop=False):
-    """ Extracts traces from rois defined as a list of points with assigned identities
+    """Extracts traces from rois defined as a list of points with assigned identities
 
     :param stack:
     :param pointsdata:
@@ -163,7 +163,7 @@ def extract_traces_from_roi_array(stack, pointsdata, twop=False):
 
 @jit(nopython=True, parallel=True)
 def _extract_trace_from_roi_array_jit(stack, roi_array, roi_identities):
-    """ Extract traces from an array containging ROI locations and identities
+    """Extract traces from an array containging ROI locations and identities
 
     :param stack:
     :param roi_array:
@@ -204,7 +204,7 @@ def _extract_trace_from_roi_array_jit(stack, roi_array, roi_identities):
 
 @jit(nopython=True)
 def get_ROI_coords_areas_traces_3D_planewise(stack, rois: np.ndarray) -> dict:
-    """ A function to efficiently extract ROI data, 3D ROIs
+    """A function to efficiently extract ROI data, 3D ROIs
 
     :param stack: imaging stack
     :param rois: image where each ROI is labeled by the same integer

@@ -24,7 +24,7 @@ def _time_percentile(
 
 
 def make_anatomy(dataset: SplitDataset, output_dir=None, block_size=None, **kwargs):
-    """ Make an anatomy stack from a 4D dataset
+    """Make an anatomy stack from a 4D dataset
 
     :param dataset:
     :param output_dir:
@@ -58,7 +58,7 @@ def make_anatomy(dataset: SplitDataset, output_dir=None, block_size=None, **kwar
 
 
 def calc_f0(stack, frames):
-    """ Calculate the baseline flourescence over
+    """Calculate the baseline flourescence over
     a chosen list of frames
 
     :param stack:
@@ -96,7 +96,7 @@ def _dff(
 
 
 def dff(dataset: SplitDataset, baseline_stack, output_dir=None, n_jobs=20, **kwargs):
-    """ Calculates change over baseline
+    """Calculates change over baseline
     :param dataset:
     :param baseline_stack: F stack for the (F_i - F) / F calculation
     :param output_dir:
@@ -135,14 +135,14 @@ def _downsample_block(dataset, old_block, filename, factor, method):
 
 def downsample(
     dataset: SplitDataset,
-    downsampling= (1, 1, 2, 2),
+    downsampling=(1, 1, 2, 2),
     proc_block_shape=None,
     crop=None,
     output_dir=None,
     n_jobs=20,
     method=np.sum,
 ):
-    """ Donwsamples a dataset
+    """Donwsamples a dataset
 
     :param dataset:
     :param downsampling: tuple of 4 (original, original, ds_factor, ds_factor)
@@ -200,7 +200,7 @@ def _average_block(dataset, block, start, trial_duration, n_trials, out_file):
 def average_trials(
     dataset, start, trial_duration, n_trials, block_size, output_dir=None
 ):
-    """ Averages dataset over trials
+    """Averages dataset over trials
 
     :param dataset: input dataset
     :param destination: output folder

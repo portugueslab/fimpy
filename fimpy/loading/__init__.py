@@ -11,8 +11,7 @@ def loading_function(f):
 
 
 class StackSaver(Blocks):
-    """
-    """
+    """"""
 
     def __init__(
         self, *args, destination=None, name="original", verbose=False, **kwargs
@@ -49,7 +48,7 @@ class StackSaver(Blocks):
         fl.save(str(self.path / fname), to_save, compression="blosc")
 
     def save_metadata(self):
-        """ Save stack metadata in json file
+        """Save stack metadata in json file
         :return:
         """
         stack_metadata = self.serialize()
