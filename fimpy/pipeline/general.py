@@ -58,7 +58,7 @@ def make_anatomy(dataset: SplitDataset, output_dir=None, block_size=None, **kwar
 
 
 def calc_f0(stack, frames):
-    """Calculate the baseline flourescence over
+    """Calculate the baseline fluorescence over
     a chosen list of frames
 
     :param stack:
@@ -142,7 +142,7 @@ def downsample(
     n_jobs=20,
     method=np.sum,
 ):
-    """Donwsamples a dataset
+    """Downsamples a dataset
 
     :param dataset:
     :param downsampling: tuple of 4 (original, original, ds_factor, ds_factor)

@@ -116,8 +116,8 @@ def _tuple3_dist2(t1, t2):
 
 @jit(nopython=True)
 def _dist_vox(t1, t2, vs2):
-    """Squared distance betwwen tuples,
-    taking into account voxes sizes
+    """Squared distance between tuples,
+    taking into account voxels sizes
 
     :param t1:
     :param t2:
@@ -338,10 +338,10 @@ def _jit_flood(
                         )
                     )
 
-            # For the assembled ROI, check if the area is big engough
+            # For the assembled ROI, check if the area is big enough
             if len(selected_indexes) >= min_area:
                 # if so, fill out the ROI labeling array with a ROI id,
-                # and make it inacessible to further ROI finding
+                # and make it inaccessible to further ROI finding
                 for idx in selected_indexes:
                     labels[idx] = i_roi
                     valid[idx] = 0
