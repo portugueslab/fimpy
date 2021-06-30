@@ -23,7 +23,9 @@ def _time_percentile(
         raise AssertionError(f"Invalid method {method}")
 
 
-def make_anatomy(dataset: SplitDataset, output_dir=None, block_size=None, n_jobs=20, **kwargs):
+def make_anatomy(
+    dataset: SplitDataset, output_dir=None, block_size=None, n_jobs=20, **kwargs
+):
     """Make an anatomy stack from a 4D dataset
 
     :param dataset:
