@@ -161,12 +161,13 @@ def downsample(
         shape_block=proc_block_shape if proc_block_shape else dataset.shape_block,
     )
 
-    shape_downsampled = tuple(
-        sc // ds for sc, ds in zip(old_dataset.shape_cropped, downsampling)
-    )
-    block_size_downsampled = tuple(
-        sb // ds for (sb, ds) in zip(old_dataset.shape_block, downsampling)
-    )
+    size_array = np.ones(old_dataset.shape_cropped[2:])
+    size = block_reduce(size_array, downsampling[2:], method).shape
+    shape_downsampled = old_dataset.shape_cropped[:2] + size
+
+    size_array = np.ones(old_dataset.shape_block[2:])
+    size = block_reduce(size_array, downsampling[2:], method).shape
+    block_size_downsampled = old_dataset.shape_block[:2] + size
 
     new_dataset = EmptySplitDataset(
         root=output_dir or dataset.root.parent,
