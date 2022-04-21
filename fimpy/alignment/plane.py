@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.ndimage.interpolation import shift
-from skimage.feature import register_translation
 from fimpy.alignment.volume import sobel_stack
 from skimage.registration import phase_cross_correlation
 
