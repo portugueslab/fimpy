@@ -47,7 +47,7 @@ def fast_pearson(x, y):
         s_y += y[i]
         s_x2 += x[i] ** 2
         s_y2 += y[i] ** 2
-    denominator = math.sqrt((s_x2 - (s_x ** 2) / n) * (s_y2 - (s_y ** 2) / n))
+    denominator = math.sqrt((s_x2 - (s_x**2) / n) * (s_y2 - (s_y**2) / n))
     if denominator == 0:
         return 0
     return (s_xy - s_x * s_y / n) / denominator

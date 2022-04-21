@@ -42,7 +42,7 @@ def test_positive_corr():
         ]
     )
 
-    np.testing.assert_allclose(cm, expected_result, atol=2 / 2 ** 15)
+    np.testing.assert_allclose(cm, expected_result, atol=2 / 2**15)
 
 
 def test_big_vals():
@@ -55,14 +55,14 @@ def test_big_vals():
                 [[255, 255, 255], [0, 255, 255], [0, 0, 0]],
             ]
         )
-        * 2 ** 4
+        * 2**4
     )
 
     cm = correlation_map(video[:, None, :, :], window_size=(1, 3, 3))
 
     result = np.array([[0, 0, 0], [0, 0.375, 0], [0, 0, 0]])[None, :, :]
 
-    assert np.all(np.isclose(cm, result, atol=2 / 2 ** 15))
+    assert np.all(np.isclose(cm, result, atol=2 / 2**15))
 
 
 def test_simple_flood_case():

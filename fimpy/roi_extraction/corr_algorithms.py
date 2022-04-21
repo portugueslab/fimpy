@@ -273,7 +273,7 @@ def _jit_flood(
 
     i_roi = 0
 
-    max_r2 = max_radius ** 2
+    max_r2 = max_radius**2
     voxel_size2 = _tuple3_square(voxel_size)
 
     valid = corr_map.copy()
