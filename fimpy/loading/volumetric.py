@@ -55,11 +55,71 @@ def load_volumetric(
             if verbose:
                 print("Loading ", tf)
             # Read and pour:
-            loaded_ds.pour(_stack_from_tif(str(tf)))
 
         except RuntimeError as e:
             print("Failed reading {}".format(tf))
             print(str(e))
+
+    return loaded_ds.finalize()
+
+@loading_function
+def load_volumetric_new_reader(
+    data_dir,
+    n_planes,
+    filesort_key=None,
+    output_dir=None,
+    block_duration=300,
+    resolution=(1, 1, 1, 1),
+    verbose=True,
+):
+    """
+    Load a tiff micromanager file into a split h5 dataset.
+    :param data_dir:
+    :param output_dir:
+    :param fish_id:
+    :param session_id:
+    :return:
+    """
+
+    if output_dir is None:
+        output_dir = data_dir
+
+    data_dir, output_dir = Path(data_dir), Path(output_dir)
+
+    # find all files:
+    im_files = sorted(list(data_dir.glob("*.tif")), key=filesort_key)
+    if len(im_files) == 0:
+        raise Exception("The selected folder contains no tiff files!")
+
+    im_shape = _imshape_from_tif(im_files[0])  # shape of a single frame
+    if len(im_shape) > 2:
+        im_shape = im_shape[1:]
+
+    # Not knowing the shape full at this point, we will just make an empty
+    # container with full_shape equal to block shape. This will be corrected
+    # at the end by the StackContainerLs object before saving stack metadata.
+
+    loaded_ds = StackContainerLs(
+        output_dir,
+        shape_full=(block_duration, n_planes) + im_shape,
+        shape_block=(block_duration, n_planes) + im_shape,
+        resolution=resolution,
+    )
+
+    tf = im_files[0]
+    try:
+        if verbose:
+            print("Loading ", tf)
+        # Read and pour:
+        data = _stack_from_tif(str(tf))
+        print(data.shape)
+        if len(data.shape) > 3:
+            data = data[0, ...]
+        loaded_ds.pour(data)
+
+    except RuntimeError as e:
+        print("Failed reading {}".format(tf))
+        print(str(e))
 
     return loaded_ds.finalize()
 
@@ -84,7 +144,7 @@ class StackContainerLs(EmptySplitDataset):
         self.total_duration = 0
         self.i_plane = 0
         self.i_frame = 0
-        self.n_blocks = 0
+        self.block_count = 0
         self.i_frame_absolute = 0
         self.files = []
         self.plane_shape = None
@@ -100,7 +160,6 @@ class StackContainerLs(EmptySplitDataset):
                 (self.time_block_duration, self.n_planes) + data.shape[1:],
                 dtype=data.dtype,
             )
-
         if data.shape[0] == 0:
             return True
 
@@ -141,10 +200,10 @@ class StackContainerLs(EmptySplitDataset):
         self.pour(data[i_data:])
 
     def save_block(self):
-        self.n_blocks += 1
+        self.block_count += 1
         self.total_duration += self.i_frame
         self.save_block_data(
-            self.n_blocks, self.arr_write[: self.i_frame, :, :], verbose=True
+            self.block_count, self.arr_write[: self.i_frame, :, :], verbose=True
         )
 
     def finalize(self):
