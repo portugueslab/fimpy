@@ -15,7 +15,7 @@ def merge_rois(blocks: Blocks, block_arrays: np.ndarray):
     new_rois = np.full(blocks.shape_full, -1, np.int32)
     counter = 0
     margin = tuple(p // 2 for p in blocks.padding)
-    for (i, j, k) in product(*(range(x) for x in blocks.block_starts.shape[:-1])):
+    for i, j, k in product(*(range(x) for x in blocks.block_starts.shape[:-1])):
         c_offset = tuple(blocks.block_starts[i, j, k])
         counter = _update_labels(
             new_rois,
